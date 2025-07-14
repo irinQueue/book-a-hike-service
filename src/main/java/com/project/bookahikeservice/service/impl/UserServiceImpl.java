@@ -20,11 +20,10 @@ public class UserServiceImpl implements UserService {
     private  UserRepository userRepository;
 
     @Override
-    public List<User> saveUser(User user) {
+    public User saveUser(User user) {
         logger.info("POST /api/user/create-user called");
         logger.info("User {} has been added", user);
-        userRepository.save(user);
-        return userRepository.findAll();
+        return userRepository.save(user);
     }
 
     @Override
