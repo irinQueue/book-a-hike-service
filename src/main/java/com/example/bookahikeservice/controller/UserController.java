@@ -21,7 +21,7 @@ public class UserController {
     public List<User> getUser() {
         logger.info("GET /api/user called");
         List<User> users = userService.getUser();
-        logger.debug("Retrieved {} users", users.size());
+        logger.info("Retrieved {} users", users);
         return users;
     }
 }
