@@ -12,8 +12,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUser() {
         return List.of(
-                new User(1L, "Johnico", "Irinco", "irincojohnico@gmail.com"),
-                new User(2L, "Jane Doe", "Doe","jane.doe@example.com")
+                new User(1L, "Johnico", "Irinco", "irincojohnico@gmail.com","09123424242"),
+                new User(2L, "Jane Doe", "Doe","jane.doe@example.com","09123424211")
         );
     }
 }
