@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,11 +28,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUser() {
+    public Optional<User> getUserById(Long id) {
+        logger.info("Get /api/user/{id} called");
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
         List<User> users = userRepository.findAll();
         logger.info("GET /api/user called");
         logger.info("Fetched {} users from the database", users.size());
         return users;
     }
+
 }
 
