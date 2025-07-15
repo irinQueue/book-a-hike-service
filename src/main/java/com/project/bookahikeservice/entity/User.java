@@ -1,7 +1,12 @@
 package com.project.bookahikeservice.entity;
 
-import lombok.*;
 import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Data
@@ -10,7 +15,7 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +31,19 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    // =========================
+    // UserDetails methods
+    // =========================
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
 }
