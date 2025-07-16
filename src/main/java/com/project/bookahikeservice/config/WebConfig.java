@@ -1,4 +1,4 @@
-package com.example.bookahikeservice.config;
+package com.project.bookahikeservice.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

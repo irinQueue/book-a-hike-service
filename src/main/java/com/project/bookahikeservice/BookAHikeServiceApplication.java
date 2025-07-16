@@ -1,4 +1,4 @@
-package com.example.bookahikeservice;
+package com.project.bookahikeservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

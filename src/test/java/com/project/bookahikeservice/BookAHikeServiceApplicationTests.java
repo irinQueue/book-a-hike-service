@@ -1,4 +1,4 @@
-package com.example.bookahikeservice;
+package com.project.bookahikeservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
