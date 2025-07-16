@@ -1,6 +1,7 @@
 package com.project.bookahikeservice.service.impl;
 
 import com.project.bookahikeservice.controller.UserController;
+import com.project.bookahikeservice.dto.UserRegistrationDto;
 import com.project.bookahikeservice.entity.Role;
 import com.project.bookahikeservice.entity.User;
 import com.project.bookahikeservice.repository.RoleRepository;
@@ -33,18 +34,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(User user) {
-        logger.info("POST /api/user/create-user called");
+    public User saveUser(UserRegistrationDto dto) {
+
+        logger.info("Registering user with email: {}", dto.getEmail());
+        // Check if user already exists
+        userRepository.findByEmail(dto.getEmail()).ifPresent(u -> {
+            throw new RuntimeException("Email is already taken");
+        });
 
         // Encrypt the password
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String encodedPassword = passwordEncoder.encode(dto.getPassword());
 
-        // Assign default role: ROLE_JOINER
+        // Get the default role
         Role joinerRole = roleRepository.findByName("ROLE_JOINER")
                 .orElseThrow(() -> new RuntimeException("Default role not found"));
+        // Map DTO to User
+        User user = new User();
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setNumber(dto.getNumber());
+        user.setPassword(encodedPassword);
         user.setRoles(Collections.singleton(joinerRole));
 
-        logger.info("User {} has been added with role {}", user.getEmail(), joinerRole.getName());
         return userRepository.save(user);
     }
 

@@ -2,6 +2,7 @@ package com.project.bookahikeservice.controller;
 
 
 import com.project.bookahikeservice.dto.ApiResponse;
+import com.project.bookahikeservice.dto.UserRegistrationDto;
 import com.project.bookahikeservice.dto.UserResponseDto;
 import com.project.bookahikeservice.entity.User;
 import com.project.bookahikeservice.service.UserService;
@@ -60,9 +61,9 @@ public class UserController {
     }
 
     @PostMapping("/create-user")
-    public ApiResponse<User> createUser(@RequestBody User user) {
+    public ApiResponse<User> createUser(@RequestBody UserRegistrationDto userDto) {
         try {
-            User savedUser = userService.saveUser(user);
+            User savedUser = userService.saveUser(userDto); // this assigns ROLE_JOINER
             return new ApiResponse<>(
                     Collections.singletonList(savedUser),
                     Collections.emptyList()
