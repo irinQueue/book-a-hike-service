@@ -2,6 +2,7 @@ package com.project.bookahikeservice.controller;
 
 import com.project.bookahikeservice.dto.LoginRequest;
 import com.project.bookahikeservice.dto.LoginResponse;
+import com.project.bookahikeservice.entity.Role;
 import com.project.bookahikeservice.entity.User;
 import com.project.bookahikeservice.repository.UserRepository;
 import com.project.bookahikeservice.security.JwtService;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,6 +41,18 @@ public class AuthController {
 
         String token = jwtService.generateToken(user);
 
-        return ResponseEntity.ok(new LoginResponse(token));
+        // Get roles as strings
+        List<String> roleNames = user.getRoles().stream()
+                .map(Role::getName)
+                .toList();
+
+        LoginResponse response = new LoginResponse(
+                token,
+                user.getEmail(),
+                user.getFirstName() + " " + user.getLastName(),
+                roleNames
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
