@@ -1,6 +1,6 @@
 package com.project.bookahikeservice.controller;
 
-import com.project.bookahikeservice.dto.RoleUserCountDto;
+import com.project.bookahikeservice.dto.RoleUserCountProjection;
 import com.project.bookahikeservice.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ public class AdminController {
 
     @GetMapping("/user-role-stats")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<RoleUserCountDto>> getUserCountsPerRole() {
-        List<RoleUserCountDto> stats = roleService.getUserCountsPerRole();
+    public ResponseEntity<List<RoleUserCountProjection>> getUserCountsPerRole() {
+        List<RoleUserCountProjection> stats = roleService.getUserCountsPerRole();
         return ResponseEntity.ok(stats);
     }
 

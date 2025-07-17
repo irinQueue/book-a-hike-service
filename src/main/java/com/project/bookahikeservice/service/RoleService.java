@@ -1,9 +1,9 @@
 package com.project.bookahikeservice.service;
 
-import com.project.bookahikeservice.dto.RoleUserCountDto;
+import com.project.bookahikeservice.dto.RoleUserCountProjection;
 
 import java.util.List;
 
 public interface RoleService {
-    List<RoleUserCountDto> getUserCountsPerRole();
+    List<RoleUserCountProjection> getUserCountsPerRole();
 }

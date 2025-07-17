@@ -1,6 +1,6 @@
 package com.project.bookahikeservice.service.impl;
 
-import com.project.bookahikeservice.dto.RoleUserCountDto;
+import com.project.bookahikeservice.dto.RoleUserCountProjection;
 import com.project.bookahikeservice.repository.RoleRepository;
 import com.project.bookahikeservice.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<RoleUserCountDto> getUserCountsPerRole() {
+    public List<RoleUserCountProjection> getUserCountsPerRole() {
         return roleRepository.getUserCountsPerRole();
     }
 }
