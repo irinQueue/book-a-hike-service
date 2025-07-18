@@ -1,4 +1,4 @@
-package com.project.bookahikeservice.dto;
+package com.project.bookahikeservice.dto.projection;
 
 public interface RoleUserCountProjection {
     String getRoleName();

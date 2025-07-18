@@ -1,4 +1,4 @@
-package com.project.bookahikeservice.dto;
+package com.project.bookahikeservice.dto.response;
 
 import java.util.List;
 

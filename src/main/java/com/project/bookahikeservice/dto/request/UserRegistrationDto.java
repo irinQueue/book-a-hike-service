@@ -1,4 +1,4 @@
-package com.project.bookahikeservice.dto;
+package com.project.bookahikeservice.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
