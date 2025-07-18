@@ -41,7 +41,6 @@ public class AuthController {
 
         String token = jwtService.generateToken(user);
 
-        // Get roles as strings
         List<String> roleNames = user.getRoles().stream()
                 .map(Role::getName)
                 .toList();
