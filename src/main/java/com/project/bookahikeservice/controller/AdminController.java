@@ -1,6 +1,6 @@
 package com.project.bookahikeservice.controller;
 
-import com.project.bookahikeservice.dto.RoleUserCountProjection;
+import com.project.bookahikeservice.dto.projection.RoleUserCountProjection;
 import com.project.bookahikeservice.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

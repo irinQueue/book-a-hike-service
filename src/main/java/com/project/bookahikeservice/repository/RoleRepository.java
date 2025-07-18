@@ -1,6 +1,6 @@
 package com.project.bookahikeservice.repository;
 
-import com.project.bookahikeservice.dto.RoleUserCountProjection;
+import com.project.bookahikeservice.dto.projection.RoleUserCountProjection;
 import com.project.bookahikeservice.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
