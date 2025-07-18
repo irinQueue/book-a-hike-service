@@ -12,4 +12,6 @@ public interface UserService {
     User saveUser(UserRegistrationDto dto);
     List<User> getAllUsers();
     Optional<User> getUserById(Long id);
+    User createOrganizer(UserRegistrationDto dto);
+
 }

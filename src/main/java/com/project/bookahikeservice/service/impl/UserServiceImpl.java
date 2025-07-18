@@ -73,4 +73,27 @@ public class UserServiceImpl implements UserService {
         logger.info("Fetched {} users from the database", users.size());
         return users;
     }
+
+    @Override
+    public User createOrganizer(UserRegistrationDto dto) {
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        User user = new User();
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setNumber(dto.getNumber());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        Role organizerRole = roleRepository.findByName("ROLE_ORGANIZER")
+                .orElseThrow(() -> new RuntimeException("ROLE_ORGANIZER not found in DB"));
+
+        user.setRoles(Collections.singleton(organizerRole));
+
+        return userRepository.save(user);
+    }
+
+
 }
