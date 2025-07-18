@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/events")
@@ -54,7 +55,7 @@ public class EventController {
 
     // Public access
     @GetMapping("/get-all")
-    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllEvents(@PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllEvents(@PageableDefault Pageable pageable) {
         try {
             Page<EventResponseDto> page = eventService.getAllEvents(pageable);
 
@@ -83,5 +84,24 @@ public class EventController {
             return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
+
+    @GetMapping("/get-by-id")
+    public ResponseEntity<?> getEventById(@RequestParam Long id) {
+        try {
+            EventResponseDto event = eventService.getEventById(id);
+
+            return ResponseEntity.ok(event); // Returning a single EventResponseDto
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(
+                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id))
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Error fetching event: " + e.getMessage()))
+            );
+        }
+    }
+
 
 }
