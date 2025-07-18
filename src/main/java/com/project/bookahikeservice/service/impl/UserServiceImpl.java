@@ -1,7 +1,7 @@
 package com.project.bookahikeservice.service.impl;
 
 import com.project.bookahikeservice.controller.UserController;
-import com.project.bookahikeservice.dto.UserRegistrationDto;
+import com.project.bookahikeservice.dto.request.UserRegistrationDto;
 import com.project.bookahikeservice.entity.Role;
 import com.project.bookahikeservice.entity.User;
 import com.project.bookahikeservice.repository.RoleRepository;

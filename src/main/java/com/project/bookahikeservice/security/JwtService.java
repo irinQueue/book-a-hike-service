@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.project.bookahikeservice.entity.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -43,4 +42,5 @@ public class JwtService {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret)).build();
         return verifier.verify(token);
     }
+
 }

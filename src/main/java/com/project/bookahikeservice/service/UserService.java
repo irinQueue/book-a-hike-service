@@ -1,7 +1,7 @@
 package com.project.bookahikeservice.service;
 
 
-import com.project.bookahikeservice.dto.UserRegistrationDto;
+import com.project.bookahikeservice.dto.request.UserRegistrationDto;
 import com.project.bookahikeservice.entity.User;
 
 import java.util.List;

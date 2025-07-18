@@ -1,9 +1,9 @@
 package com.project.bookahikeservice.controller;
 
 
-import com.project.bookahikeservice.dto.ApiResponse;
-import com.project.bookahikeservice.dto.UserRegistrationDto;
-import com.project.bookahikeservice.dto.UserResponseDto;
+import com.project.bookahikeservice.dto.response.ApiResponse;
+import com.project.bookahikeservice.dto.request.UserRegistrationDto;
+import com.project.bookahikeservice.dto.response.UserResponseDto;
 import com.project.bookahikeservice.entity.User;
 import com.project.bookahikeservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

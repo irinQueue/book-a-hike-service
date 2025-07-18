@@ -1,7 +1,9 @@
 package com.project.bookahikeservice.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
@@ -16,7 +18,10 @@ public class Role implements GrantedAuthority {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name; // Example: ROLE_JOINER, ROLE_ADMIN, etc.
+    private String name;
+
+//    @ManyToMany(mappedBy = "roles")
+//    private Set<User> users;
 
     @Override
     public String getAuthority() {
