@@ -1,19 +1,16 @@
 package com.project.bookahikeservice.controller;
 
 import com.project.bookahikeservice.dto.projection.RoleUserCountProjection;
-import com.project.bookahikeservice.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.project.bookahikeservice.dto.ApiResponse;
-import com.project.bookahikeservice.dto.UserRegistrationDto;
+import com.project.bookahikeservice.dto.request.UserRegistrationDto;
+import com.project.bookahikeservice.dto.response.ApiResponse;
 import com.project.bookahikeservice.entity.User;
+import com.project.bookahikeservice.service.RoleService;
 import com.project.bookahikeservice.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import java.util.List;
 
