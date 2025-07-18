@@ -18,4 +18,23 @@ public class EventResponseDto {
     private BigDecimal cost;
     private String coordinatorName;
     private List<String> images;
+
+    public EventResponseDto(Long id, String title, String description, LocalDate startDate,
+                            LocalDate endDate, int difficulty, String classification,
+                            BigDecimal cost, String coordinatorName, List<String> images) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.difficulty = difficulty;
+        this.classification = classification;
+        this.cost = cost;
+        this.coordinatorName = coordinatorName;
+        this.images = images;
+    }
+
+    public EventResponseDto() {
+
+    }
 }

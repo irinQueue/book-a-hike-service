@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
@@ -61,4 +63,24 @@ public class EventServiceImpl implements EventService {
         response.setImages(event.getImages());
         return response;
     }
+
+    @Override
+    public EventResponseDto getEventById(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with id: " + id));
+
+        return new EventResponseDto(
+                event.getId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getStartDate(),
+                event.getEndDate(),
+                event.getDifficulty(),
+                event.getClassification(),
+                event.getCost(),
+                event.getCoordinator().getFirstName() + " " + event.getCoordinator().getLastName(),
+                event.getImages()
+        );
+    }
+
 }

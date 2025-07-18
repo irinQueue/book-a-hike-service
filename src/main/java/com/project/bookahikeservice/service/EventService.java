@@ -8,4 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface EventService {
     EventResponseDto createEvent(EventRequestDto dto);
     Page<EventResponseDto> getAllEvents(Pageable pageable);
+    EventResponseDto getEventById(Long id);
 }
