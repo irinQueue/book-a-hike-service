@@ -20,12 +20,9 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/events")
 public class EventController {
 
-    private final EventService eventService;
-
     @Autowired
-    public EventController(EventService eventService) {
-        this.eventService = eventService;
-    }
+    private EventService eventService;
+
 
     @PostMapping("/create-event")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
