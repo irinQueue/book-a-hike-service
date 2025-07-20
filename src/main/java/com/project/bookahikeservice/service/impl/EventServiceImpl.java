@@ -44,6 +44,31 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public EventResponseDto updateEvent(Long id, EventRequestDto dto) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + id));
+
+        User coordinator = userRepository.findById(dto.getCoordinatorId())
+                .orElseThrow(() -> new RuntimeException("Coordinator not found"));
+
+        event.setTitle(dto.getTitle());
+        event.setDescription(dto.getDescription());
+        event.setStartDate(dto.getStartDate());
+        event.setEndDate(dto.getEndDate());
+        event.setDifficulty(dto.getDifficulty());
+        event.setClassification(dto.getClassification());
+        event.setCost(dto.getCost());
+        event.setCoordinator(coordinator);
+        event.setImages(dto.getImages());
+
+        Event saved = eventRepository.save(event);
+
+        return mapToResponse(saved);
+    }
+
+
+
+    @Override
     public Page<EventResponseDto> getAllEvents(Pageable pageable) {
         return eventRepository.findAll(pageable)
                 .map(this::mapToResponse);

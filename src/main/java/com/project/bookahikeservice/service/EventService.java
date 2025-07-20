@@ -9,4 +9,6 @@ public interface EventService {
     EventResponseDto createEvent(EventRequestDto dto);
     Page<EventResponseDto> getAllEvents(Pageable pageable);
     EventResponseDto getEventById(Long id);
+    EventResponseDto updateEvent(Long id, EventRequestDto dto);
+
 }

@@ -52,6 +52,26 @@ public class EventController {
         }
     }
 
+    @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<?> updateEvent(
+            @PathVariable Long id,
+            @Valid @RequestBody EventRequestDto updatedEventDto
+    ) {
+        try {
+            EventResponseDto updatedEvent = eventService.updateEvent(id, updatedEventDto);
+            return ResponseEntity.ok(updatedEvent);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(
+                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id))
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to update event: " + e.getMessage()))
+            );
+        }
+    }
+
 
     // Public access
     @GetMapping("/get-all")

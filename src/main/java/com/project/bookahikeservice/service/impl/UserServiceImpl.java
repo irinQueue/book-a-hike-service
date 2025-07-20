@@ -87,8 +87,8 @@ public class UserServiceImpl implements UserService {
         user.setNumber(dto.getNumber());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        Role organizerRole = roleRepository.findByName("ROLE_ORGANIZER")
-                .orElseThrow(() -> new RuntimeException("ROLE_ORGANIZER not found in DB"));
+        Role organizerRole = roleRepository.findByName("ROLE_COORDINATOR")
+                .orElseThrow(() -> new RuntimeException("ROLE_COORDINATOR not found in DB"));
 
         user.setRoles(Collections.singleton(organizerRole));
 
