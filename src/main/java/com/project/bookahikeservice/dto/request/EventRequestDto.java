@@ -2,7 +2,6 @@ package com.project.bookahikeservice.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,7 +27,7 @@ public class EventRequestDto {
     private int difficulty;
 
     @NotBlank(message = "Classification is required")
-    private String classification; // You can later switch to enum for stricter validation
+    private String classification;
 
     @DecimalMin("0.0")
     private BigDecimal cost;
@@ -36,6 +35,11 @@ public class EventRequestDto {
     @NotNull(message = "Coordinator ID is required")
     private Long coordinatorId;
 
-    // Optional list of image files
     private List<String> images;
+
+//    @NotNull(message = "Created by user ID is required")
+//    private Long createdBy;
+//
+//    @NotNull(message = "Updated by user ID is required")
+//    private Long updatedBy;
 }

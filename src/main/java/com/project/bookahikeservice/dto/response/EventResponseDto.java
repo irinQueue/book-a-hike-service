@@ -5,10 +5,11 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class EventResponseDto {
-    private Long id;
+    private UUID id;
     private String title;
     private String description;
     private LocalDate startDate;
@@ -19,7 +20,7 @@ public class EventResponseDto {
     private String coordinatorName;
     private List<String> images;
 
-    public EventResponseDto(Long id, String title, String description, LocalDate startDate,
+    public EventResponseDto(UUID id, String title, String description, LocalDate startDate,
                             LocalDate endDate, int difficulty, String classification,
                             BigDecimal cost, String coordinatorName, List<String> images) {
         this.id = id;
@@ -37,4 +38,5 @@ public class EventResponseDto {
     public EventResponseDto() {
 
     }
+
 }

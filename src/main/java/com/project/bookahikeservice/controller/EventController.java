@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/events")
@@ -52,7 +53,7 @@ public class EventController {
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<?> updateEvent(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody EventRequestDto updatedEventDto
     ) {
         try {
@@ -103,7 +104,7 @@ public class EventController {
     }
 
     @GetMapping("/get-by-id")
-    public ResponseEntity<?> getEventById(@RequestParam Long id) {
+    public ResponseEntity<?> getEventById(@RequestParam UUID id) {
         try {
             EventResponseDto event = eventService.getEventById(id);
 

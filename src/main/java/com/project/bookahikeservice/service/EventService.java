@@ -5,10 +5,12 @@ import com.project.bookahikeservice.dto.response.EventResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.UUID;
+
 public interface EventService {
     EventResponseDto createEvent(EventRequestDto dto);
     Page<EventResponseDto> getAllEvents(Pageable pageable);
-    EventResponseDto getEventById(Long id);
-    EventResponseDto updateEvent(Long id, EventRequestDto dto);
+    EventResponseDto getEventById(UUID id);
+    EventResponseDto updateEvent(UUID id, EventRequestDto dto);
 
 }
