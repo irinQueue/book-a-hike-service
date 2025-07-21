@@ -2,6 +2,7 @@ package com.project.bookahikeservice.controller;
 
 import com.project.bookahikeservice.dto.request.BookingRequestDto;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
+import com.project.bookahikeservice.dto.response.PaginatedResponse;
 import com.project.bookahikeservice.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @RestController
@@ -35,9 +37,19 @@ public class BookingController {
     }
 
     @DeleteMapping("/delete-booking/{id}")
-    public ResponseEntity<String> deleteBooking(@PathVariable UUID id) {
-        bookingService.deleteBooking(id);
-        return ResponseEntity.ok("Booking deleted successfully.");
+    public ResponseEntity<?> deleteBooking(@PathVariable UUID id) {
+        try {
+            String message = bookingService.deleteBooking(id);
+            return ResponseEntity.ok(new PaginatedResponse<>(null, null, null, message));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(
+                    new PaginatedResponse<>(null, null, List.of("Booking not found with ID: " + id), null)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to delete Booking: " + e.getMessage()), null)
+            );
+        }
     }
 
     @GetMapping("/get-booking/{id}")

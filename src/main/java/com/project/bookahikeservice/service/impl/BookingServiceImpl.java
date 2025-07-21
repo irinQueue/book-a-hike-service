@@ -1,5 +1,7 @@
 package com.project.bookahikeservice.service.impl;
 
+import com.project.bookahikeservice.controller.BookingController;
+import com.project.bookahikeservice.controller.UserController;
 import com.project.bookahikeservice.dto.request.BookingRequestDto;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
 import com.project.bookahikeservice.entity.Booking;
@@ -11,8 +13,11 @@ import com.project.bookahikeservice.repository.UserRepository;
 import com.project.bookahikeservice.service.BookingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,42 +33,50 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-
+    private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
 
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("No authenticated user found");
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            return null; // Guest booking
         }
 
-        User userDetails = (User) authentication.getPrincipal();
+        Object principal = authentication.getPrincipal();
 
-        return userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userDetails.getId()));
+        if (!(principal instanceof UserDetails)) {
+            throw new RuntimeException("Invalid authenticated principal");
+        }
+
+        UserDetails userDetails = (User) principal;
+
+        return userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + userDetails.getUsername()));
     }
+
 
     @Override
     public BookingResponseDto createBooking(BookingRequestDto dto) {
-
         User user = getCurrentUser();
-        String currentUser = user != null ? user.getUsername() : "guest";
+        boolean isLogin = user != null;
+        String currentUser = isLogin ? user.getFirstName() : null;
         Event event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new NoSuchElementException("Event not found"));
 
         User joiner = null;
-        if (dto.getJoinerId() != null) {
-            joiner = userRepository.findById(dto.getJoinerId())
+        if (currentUser != null) {
+            joiner = userRepository.findByEmail(currentUser)
                     .orElseThrow(() -> new NoSuchElementException("User not found"));
         }
 
         Booking booking = Booking.builder()
                 .event(event)
                 .joiner(joiner)
-                .bookingType(dto.getBookingType())
+                .bookingType(currentUser == null ? "GUEST" : "ACCOUNT")
                 .pax(dto.getPax())
                 .contactPerson(dto.getContactPerson())
                 .contactNumber(dto.getContactNumber())
-                .createdBy(currentUser)
+                .createdBy(currentUser == null ? dto.getContactPerson() : currentUser)
                 .build();
 
         booking = bookingRepository.save(booking);
@@ -77,16 +90,16 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NoSuchElementException("Booking not found"));
 
         User user = getCurrentUser();
-        String currentUser = user != null ? user.getUsername() : "guest";
+        String currentUser = user != null ? user.getUsername() : null;
 
         booking.setPax(dto.getPax());
         booking.setContactPerson(dto.getContactPerson());
         booking.setContactNumber(dto.getContactNumber());
-        booking.setBookingType(dto.getBookingType());
-        booking.setUpdatedBy(currentUser);
+        booking.setBookingType(currentUser == null ? "GUEST" : "ACCOUNT");
+        booking.setUpdatedBy(currentUser == null ? dto.getContactPerson() : currentUser);
 
-        if (dto.getJoinerId() != null) {
-            User joiner = userRepository.findById(dto.getJoinerId())
+        if (currentUser != null) {
+            User joiner = userRepository.findByEmail(currentUser)
                     .orElseThrow(() -> new NoSuchElementException("User not found"));
             booking.setJoiner(joiner);
         }
