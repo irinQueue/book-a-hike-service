@@ -67,6 +67,7 @@ public class BookingServiceImpl implements BookingService {
         if (currentUser != null) {
             joiner = userRepository.findByEmail(currentUser)
                     .orElseThrow(() -> new NoSuchElementException("User not found"));
+
         }
 
         Booking booking = Booking.builder()
@@ -76,7 +77,7 @@ public class BookingServiceImpl implements BookingService {
                 .pax(dto.getPax())
                 .contactPerson(dto.getContactPerson())
                 .contactNumber(dto.getContactNumber())
-                .createdBy(currentUser == null ? dto.getContactPerson() : currentUser)
+                .createdBy(currentUser == null ? dto.getContactPerson() : joiner.getFirstName() +  " " + joiner.getLastName())
                 .build();
 
         booking = bookingRepository.save(booking);
