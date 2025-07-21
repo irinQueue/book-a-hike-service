@@ -59,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto createBooking(BookingRequestDto dto) {
         User user = getCurrentUser();
         boolean isLogin = user != null;
-        String currentUser = isLogin ? user.getFirstName() : null;
+        String currentUser = isLogin ? user.getEmail() : null;
         Event event = eventRepository.findById(dto.getEventId())
                 .orElseThrow(() -> new NoSuchElementException("Event not found"));
 
@@ -90,18 +90,21 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NoSuchElementException("Booking not found"));
 
         User user = getCurrentUser();
-        String currentUser = user != null ? user.getUsername() : null;
+        String currentUser = user != null ? user.getEmail() : null;
 
         booking.setPax(dto.getPax());
         booking.setContactPerson(dto.getContactPerson());
         booking.setContactNumber(dto.getContactNumber());
-        booking.setBookingType(currentUser == null ? "GUEST" : "ACCOUNT");
-        booking.setUpdatedBy(currentUser == null ? dto.getContactPerson() : currentUser);
 
         if (currentUser != null) {
             User joiner = userRepository.findByEmail(currentUser)
                     .orElseThrow(() -> new NoSuchElementException("User not found"));
+            booking.setUpdatedBy((joiner.getFirstName() + " " + joiner.getLastName()));
+            booking.setBookingType("ACCOUNT");
             booking.setJoiner(joiner);
+        }else{
+            booking.setBookingType("GUEST");
+            booking.setJoiner(null);
         }
 
         return toDto(bookingRepository.save(booking));
