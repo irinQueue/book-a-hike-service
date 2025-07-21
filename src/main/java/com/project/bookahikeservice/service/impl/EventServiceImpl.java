@@ -130,4 +130,29 @@ public class EventServiceImpl implements EventService {
         );
     }
 
+    @Override
+    public String disableEvent(UUID id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + id));
+        event.setActive(false);
+        eventRepository.save(event);
+        return "Event disabled successfully.";
+    }
+
+    @Override
+    public String deleteEvent(UUID id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + id));
+        eventRepository.delete(event);
+        return "Event deleted successfully.";
+    }
+
+//    @Override
+//    public Page<EventResponseDto> getAllActiveEvents(Pageable pageable) {
+//        return eventRepository.findAllByActiveTrue(pageable)
+//                .map(this::mapToResponse);
+//    }
+
+
+
 }

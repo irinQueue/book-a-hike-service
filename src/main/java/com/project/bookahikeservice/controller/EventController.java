@@ -34,6 +34,7 @@ public class EventController {
             PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
                     List.of(createdEvent),
                     null,
+                    null,
                     null
             );
 
@@ -43,14 +44,15 @@ public class EventController {
             PaginatedResponse<EventResponseDto> errorResponse = new PaginatedResponse<>(
                     null,
                     null,
-                    List.of("Failed to create event: " + e.getMessage())
+                    List.of("Failed to create event: " + e.getMessage()),
+                    null
             );
 
             return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PatchMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<?> updateEvent(
             @PathVariable UUID id,
@@ -61,18 +63,54 @@ public class EventController {
             return ResponseEntity.ok(updatedEvent);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(
-                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id))
+                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id), null)
             );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    new PaginatedResponse<>(null, null, List.of("Failed to update event: " + e.getMessage()))
+                    new PaginatedResponse<>(null, null, List.of("Failed to update event: " + e.getMessage()), null)
+            );
+        }
+    }
+
+    @PatchMapping("/disable/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<?> disableEvent(@PathVariable UUID id) {
+        try {
+            String message = eventService.disableEvent(id);
+            return ResponseEntity.ok(new PaginatedResponse<>(null, null, null, message));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(
+                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id), null)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to disable event: " + e.getMessage()), null)
+            );
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<?> deleteEvent(@PathVariable UUID id) {
+        try {
+            String message = eventService.deleteEvent(id);
+            return ResponseEntity.ok(new PaginatedResponse<>(null, null, null, message));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(404).body(
+                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id), null)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to delete event: " + e.getMessage()), null)
             );
         }
     }
 
 
-    // Public access
-    @GetMapping("/get-all")
+
+
+    @GetMapping("/get-all") // this is for authorized roles api only
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllEvents(@PageableDefault Pageable pageable) {
         try {
             Page<EventResponseDto> page = eventService.getAllEvents(pageable);
@@ -88,6 +126,7 @@ public class EventController {
             PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
                     page.getContent(),
                     details,
+                    null,
                     null
             );
 
@@ -97,7 +136,8 @@ public class EventController {
             PaginatedResponse<EventResponseDto> errorResponse = new PaginatedResponse<>(
                     null,
                     null,
-                    List.of("Failed to fetch events: " + e.getMessage())
+                    List.of("Failed to fetch events: " + e.getMessage()),
+                    null
             );
             return ResponseEntity.internalServerError().body(errorResponse);
         }
@@ -112,14 +152,71 @@ public class EventController {
 
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(
-                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id))
+                    new PaginatedResponse<>(null, null, List.of("Event not found with ID: " + id), null)
             );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    new PaginatedResponse<>(null, null, List.of("Error fetching event: " + e.getMessage()))
+                    new PaginatedResponse<>(null, null, List.of("Error fetching event: " + e.getMessage()),null)
             );
         }
     }
 
+//    @GetMapping("/get-active")
+//   // this should be client facing api for homepage
+//    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllActiveEvents(@PageableDefault Pageable pageable) {
+//        try {
+//            Page<EventResponseDto> page = eventService.getAllActiveEvents(pageable);
+//
+//            PaginatedResponse.PageableDetails details = new PaginatedResponse.PageableDetails(
+//                    page.getNumber(),
+//                    page.getSize(),
+//                    page.getTotalElements(),
+//                    page.getTotalPages(),
+//                    page.isLast()
+//            );
+//
+//            PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
+//                    page.getContent(),
+//                    details,
+//                    null,
+//                    "Active events fetched successfully."
+//            );
+//
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            return ResponseEntity.internalServerError().body(
+//                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active events: " + e.getMessage()), null)
+//            );
+//        }
+//    }
+
+//    @GetMapping("/get-inactive")
+//    // this should be client facing api for homepage
+//    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllInactiveEvents(@PageableDefault Pageable pageable) {
+//        try {
+//            Page<EventResponseDto> page = eventService.getAllActiveEvents(pageable);
+//
+//            PaginatedResponse.PageableDetails details = new PaginatedResponse.PageableDetails(
+//                    page.getNumber(),
+//                    page.getSize(),
+//                    page.getTotalElements(),
+//                    page.getTotalPages(),
+//                    page.isLast()
+//            );
+//
+//            PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
+//                    page.getContent(),
+//                    details,
+//                    null,
+//                    "Active events fetched successfully."
+//            );
+//
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            return ResponseEntity.internalServerError().body(
+//                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active events: " + e.getMessage()), null)
+//            );
+//        }
+//    }
 
 }

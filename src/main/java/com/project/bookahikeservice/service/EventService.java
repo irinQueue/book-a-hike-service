@@ -12,5 +12,8 @@ public interface EventService {
     Page<EventResponseDto> getAllEvents(Pageable pageable);
     EventResponseDto getEventById(UUID id);
     EventResponseDto updateEvent(UUID id, EventRequestDto dto);
-
+    String disableEvent(UUID id);
+    String deleteEvent(UUID id);
+//    Page<EventResponseDto> getAllActiveEvents(Pageable pageable);
+//    Page<EventResponseDto> getAllInactiveEvents(Pageable pageable);
 }
