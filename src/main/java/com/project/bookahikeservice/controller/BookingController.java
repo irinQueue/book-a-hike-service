@@ -4,6 +4,7 @@ import com.project.bookahikeservice.dto.request.BookingRequestDto;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
 import com.project.bookahikeservice.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BookingController {
 
-    private final BookingService bookingService;
-
-
+    @Autowired
+    private BookingService bookingService;
 
     @PostMapping("/create-booking")
     public ResponseEntity<BookingResponseDto> createBooking(
