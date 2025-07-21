@@ -36,12 +36,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> {})
+                .cors(cors -> {
+                })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/events/get-all").permitAll()
+                        .requestMatchers("/api/events/get-active").permitAll()
                         .requestMatchers("/api/events/get-by-id").permitAll()
+                        .requestMatchers("/api/events/**").hasAnyRole("ADMIN", "ORGANIZER")
                         .requestMatchers("/api/events/create-event").hasAnyRole("ADMIN", "ORGANIZER")
                         .requestMatchers("/api/joiner/**").hasRole("JOINER")
                         .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")

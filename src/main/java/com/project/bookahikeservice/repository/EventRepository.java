@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findById(UUID id);
-//    Page<Event> findAllByActiveTrue(Pageable pageable);
+    Page<Event> findAllByActiveTrue(Pageable pageable);
+    Page<Event> findAllByActiveFalse(Pageable pageable);
 
 }

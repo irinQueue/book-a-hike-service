@@ -161,62 +161,63 @@ public class EventController {
         }
     }
 
-//    @GetMapping("/get-active")
-//   // this should be client facing api for homepage
-//    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllActiveEvents(@PageableDefault Pageable pageable) {
-//        try {
-//            Page<EventResponseDto> page = eventService.getAllActiveEvents(pageable);
-//
-//            PaginatedResponse.PageableDetails details = new PaginatedResponse.PageableDetails(
-//                    page.getNumber(),
-//                    page.getSize(),
-//                    page.getTotalElements(),
-//                    page.getTotalPages(),
-//                    page.isLast()
-//            );
-//
-//            PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
-//                    page.getContent(),
-//                    details,
-//                    null,
-//                    "Active events fetched successfully."
-//            );
-//
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().body(
-//                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active events: " + e.getMessage()), null)
-//            );
-//        }
-//    }
+    @GetMapping("/get-active")
+   // this should be client facing api for homepage
+    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllActiveEvents(@PageableDefault Pageable pageable) {
+        try {
+            Page<EventResponseDto> page = eventService.getAllActiveEvents(pageable);
 
-//    @GetMapping("/get-inactive")
-//    // this should be client facing api for homepage
-//    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllInactiveEvents(@PageableDefault Pageable pageable) {
-//        try {
-//            Page<EventResponseDto> page = eventService.getAllActiveEvents(pageable);
-//
-//            PaginatedResponse.PageableDetails details = new PaginatedResponse.PageableDetails(
-//                    page.getNumber(),
-//                    page.getSize(),
-//                    page.getTotalElements(),
-//                    page.getTotalPages(),
-//                    page.isLast()
-//            );
-//
-//            PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
-//                    page.getContent(),
-//                    details,
-//                    null,
-//                    "Active events fetched successfully."
-//            );
-//
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            return ResponseEntity.internalServerError().body(
-//                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active events: " + e.getMessage()), null)
-//            );
-//        }
-//    }
+            PaginatedResponse.PageableDetails details = new PaginatedResponse.PageableDetails(
+                    page.getNumber(),
+                    page.getSize(),
+                    page.getTotalElements(),
+                    page.getTotalPages(),
+                    page.isLast()
+            );
+
+            PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
+                    page.getContent(),
+                    details,
+                    null,
+                    "Active events fetched successfully."
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active events: " + e.getMessage()), null)
+            );
+        }
+    }
+
+    @GetMapping("/get-inactive")
+    // this should be client facing api for homepage
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllInactiveEvents(@PageableDefault Pageable pageable) {
+        try {
+            Page<EventResponseDto> page = eventService.getAllInactiveEvents(pageable);
+
+            PaginatedResponse.PageableDetails details = new PaginatedResponse.PageableDetails(
+                    page.getNumber(),
+                    page.getSize(),
+                    page.getTotalElements(),
+                    page.getTotalPages(),
+                    page.isLast()
+            );
+
+            PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
+                    page.getContent(),
+                    details,
+                    null,
+                    "Inactive events fetched successfully."
+            );
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active events: " + e.getMessage()), null)
+            );
+        }
+    }
 
 }

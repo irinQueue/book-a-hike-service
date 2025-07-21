@@ -147,12 +147,17 @@ public class EventServiceImpl implements EventService {
         return "Event deleted successfully.";
     }
 
-//    @Override
-//    public Page<EventResponseDto> getAllActiveEvents(Pageable pageable) {
-//        return eventRepository.findAllByActiveTrue(pageable)
-//                .map(this::mapToResponse);
-//    }
+    @Override
+    public Page<EventResponseDto> getAllActiveEvents(Pageable pageable) {
+        return eventRepository.findAllByActiveTrue(pageable)
+                .map(this::mapToResponse);
+    }
 
+    @Override
+    public Page<EventResponseDto> getAllInactiveEvents(Pageable pageable) {
+        return eventRepository.findAllByActiveFalse(pageable)
+                .map(this::mapToResponse);
+    }
 
 
 }
