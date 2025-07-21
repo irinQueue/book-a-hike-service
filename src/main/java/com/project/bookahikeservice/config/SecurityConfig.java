@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/events/get-active").permitAll()
                         .requestMatchers("/api/events/get-by-id").permitAll()
+                        .requestMatchers("/api/bookings/create-booking").permitAll()
                         .requestMatchers("/api/events/**").hasAnyRole("ADMIN", "ORGANIZER")
                         .requestMatchers("/api/events/create-event").hasAnyRole("ADMIN", "ORGANIZER")
                         .requestMatchers("/api/joiner/**").hasRole("JOINER")
