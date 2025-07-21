@@ -19,14 +19,14 @@ public class BookingController {
 
 
 
-    @PostMapping
+    @PostMapping("/create-booking")
     public ResponseEntity<BookingResponseDto> createBooking(
             @RequestBody BookingRequestDto dto
     ) {
         return ResponseEntity.ok(bookingService.createBooking(dto));
     }
 
-    @PatchMapping("update/{id}")
+    @PatchMapping("update-booking/{id}")
     public ResponseEntity<BookingResponseDto> updateBooking(
             @PathVariable UUID id,
             @RequestBody BookingRequestDto dto
@@ -34,18 +34,18 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.updateBooking(id, dto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete-booking/{id}")
     public ResponseEntity<String> deleteBooking(@PathVariable UUID id) {
         bookingService.deleteBooking(id);
         return ResponseEntity.ok("Booking deleted successfully.");
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get-booking/{id}")
     public ResponseEntity<BookingResponseDto> getBookingById(@PathVariable UUID id) {
         return ResponseEntity.ok(bookingService.getBookingById(id));
     }
 
-    @GetMapping
+    @GetMapping("/get-all-booking")
     public ResponseEntity<List<BookingResponseDto>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
