@@ -13,6 +13,7 @@ public class PaginatedResponse<T> {
     private List<T> data;
     private PageableDetails pageable;
     private List<String> errors;
+    private String message;
 
     @Data
     @AllArgsConstructor

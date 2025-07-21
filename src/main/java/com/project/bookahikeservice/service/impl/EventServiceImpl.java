@@ -10,9 +10,12 @@ import com.project.bookahikeservice.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,10 +24,24 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
 
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("No authenticated user found");
+        }
+
+        User userDetails = (User) authentication.getPrincipal();
+
+        return userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userDetails.getId()));
+    }
+
     @Override
     public EventResponseDto createEvent(EventRequestDto dto) {
         User coordinator = userRepository.findById(dto.getCoordinatorId())
                 .orElseThrow(() -> new RuntimeException("Coordinator not found"));
+
+        User currentUser = getCurrentUser();
 
         Event event = Event.builder()
                 .title(dto.getTitle())
@@ -36,12 +53,42 @@ public class EventServiceImpl implements EventService {
                 .cost(dto.getCost())
                 .coordinator(coordinator)
                 .images(dto.getImages())
+                .active(true)
+                .createdBy(currentUser)
+                .updatedBy(currentUser)
                 .build();
 
         Event saved = eventRepository.save(event);
 
         return mapToResponse(saved);
     }
+
+    @Override
+    public EventResponseDto updateEvent(UUID id, EventRequestDto dto) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + id));
+
+        User coordinator = userRepository.findById(dto.getCoordinatorId())
+                .orElseThrow(() -> new RuntimeException("Coordinator not found"));
+
+        User currentUser = getCurrentUser();
+
+        event.setTitle(dto.getTitle());
+        event.setDescription(dto.getDescription());
+        event.setStartDate(dto.getStartDate());
+        event.setEndDate(dto.getEndDate());
+        event.setDifficulty(dto.getDifficulty());
+        event.setClassification(dto.getClassification());
+        event.setCost(dto.getCost());
+        event.setCoordinator(coordinator);
+        event.setImages(dto.getImages());
+        event.setUpdatedBy(currentUser);
+        Event saved = eventRepository.save(event);
+
+        return mapToResponse(saved);
+    }
+
+
 
     @Override
     public Page<EventResponseDto> getAllEvents(Pageable pageable) {
@@ -65,7 +112,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventResponseDto getEventById(Long id) {
+    public EventResponseDto getEventById(UUID id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Event not found with id: " + id));
 
@@ -82,5 +129,35 @@ public class EventServiceImpl implements EventService {
                 event.getImages()
         );
     }
+
+    @Override
+    public String disableEvent(UUID id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + id));
+        event.setActive(false);
+        eventRepository.save(event);
+        return "Event disabled successfully.";
+    }
+
+    @Override
+    public String deleteEvent(UUID id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + id));
+        eventRepository.delete(event);
+        return "Event deleted successfully.";
+    }
+
+    @Override
+    public Page<EventResponseDto> getAllActiveEvents(Pageable pageable) {
+        return eventRepository.findAllByActiveTrue(pageable)
+                .map(this::mapToResponse);
+    }
+
+    @Override
+    public Page<EventResponseDto> getAllInactiveEvents(Pageable pageable) {
+        return eventRepository.findAllByActiveFalse(pageable)
+                .map(this::mapToResponse);
+    }
+
 
 }
