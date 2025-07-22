@@ -44,6 +44,10 @@ public class Booking {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private Boolean isActive;
+    private Boolean isCancelled;
+    private Boolean isDone;
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();
