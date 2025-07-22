@@ -1,7 +1,5 @@
 package com.project.bookahikeservice.service.impl;
 
-import com.project.bookahikeservice.controller.BookingController;
-import com.project.bookahikeservice.controller.UserController;
 import com.project.bookahikeservice.dto.request.BookingRequestDto;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
 import com.project.bookahikeservice.entity.Booking;
@@ -13,8 +11,6 @@ import com.project.bookahikeservice.repository.UserRepository;
 import com.project.bookahikeservice.service.BookingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,7 +29,6 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-    private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
 
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -127,9 +122,27 @@ public class BookingServiceImpl implements BookingService {
         return toDto(booking);
     }
 
+
     @Override
     public List<BookingResponseDto> getAllBookings() {
         return bookingRepository.findAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public List<BookingResponseDto> getAllBookingsByUserId(Long joinerId) {
+        return bookingRepository.findBookingByJoinerId(joinerId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingResponseDto> getAllBookingsByEventId(UUID eventId) {
+        return bookingRepository.findBookingByEventId(eventId)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

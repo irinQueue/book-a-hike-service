@@ -12,4 +12,6 @@ public interface BookingService {
     String deleteBooking(UUID bookingId);
     BookingResponseDto getBookingById(UUID bookingId);
     List<BookingResponseDto> getAllBookings();
+    List<BookingResponseDto> getAllBookingsByUserId(Long userId);
+    List<BookingResponseDto> getAllBookingsByEventId(UUID eventId);
 }
