@@ -20,6 +20,9 @@ public class BookingResponseDto {
     private int pax;
     private String contactPerson;
     private String contactNumber;
+    private Boolean isActive;
+    private Boolean isCancelled;
+    private Boolean isDone;
     private String createdBy;
     private String updatedBy;
     private LocalDateTime createdAt;

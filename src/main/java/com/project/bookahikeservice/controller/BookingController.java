@@ -7,6 +7,7 @@ import com.project.bookahikeservice.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class BookingController {
     }
 
     @DeleteMapping("/delete-booking/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<?> deleteBooking(@PathVariable UUID id) {
         try {
             String message = bookingService.deleteBooking(id);
@@ -57,8 +59,40 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getBookingById(id));
     }
 
+    @GetMapping("/get-user-booking/{id}")
+    public ResponseEntity<List<BookingResponseDto>> getBookingByUserId(@PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.getAllBookingsByUserId(id));
+    }
+
+    @GetMapping("/get-booking-event/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<List<BookingResponseDto>> getBookingByEventId(@PathVariable UUID id) {
+        return ResponseEntity.ok(bookingService.getAllBookingsByEventId(id));
+    }
+
     @GetMapping("/get-all-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<List<BookingResponseDto>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
+
+    @GetMapping("/get-all-active-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<List<BookingResponseDto>> getAllActiveBookings() {
+        return ResponseEntity.ok(bookingService.getAllActiveBookings());
+    }
+    @GetMapping("/get-all-past-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<List<BookingResponseDto>> getAllPastBookings() {
+        return ResponseEntity.ok(bookingService.getAllPastBookings());
+    }
+    
+    @GetMapping("/get-all-cancelled-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<List<BookingResponseDto>> getAllCancelledBookings() {
+        return ResponseEntity.ok(bookingService.getAllCancelledBookings());
+    }
+
+
+
 }

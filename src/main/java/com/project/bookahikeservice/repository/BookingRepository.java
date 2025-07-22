@@ -11,4 +11,9 @@ import java.util.UUID;
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
     List<Booking> findBookingByEventId(UUID eventId);
     List<Booking> findBookingByJoinerId(Long joinerId);
+    List<Booking> findBookingByIsCancelledTrue(); //cancelled bookings
+    List<Booking> findBookingByIsDoneTrue(); // past booking
+    List<Booking> findBookingByIsActiveTrueAndIsCancelledFalseAndIsDoneFalse(); // Active booking
+
+
 }
