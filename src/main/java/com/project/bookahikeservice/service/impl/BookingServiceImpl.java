@@ -72,6 +72,9 @@ public class BookingServiceImpl implements BookingService {
                 .pax(dto.getPax())
                 .contactPerson(dto.getContactPerson())
                 .contactNumber(dto.getContactNumber())
+                .isActive(true)
+                .isCancelled(false)
+                .isDone(false)
                 .createdBy(currentUser == null ? dto.getContactPerson() : joiner.getFirstName() +  " " + joiner.getLastName())
                 .build();
 
@@ -148,6 +151,30 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<BookingResponseDto> getAllCancelledBookings() {
+        return bookingRepository.findBookingByIsCancelledTrue()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingResponseDto> getAllActiveBookings() {
+        return bookingRepository.findBookingByIsActiveTrueAndIsCancelledFalseAndIsDoneFalse()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingResponseDto> getAllPastBookings() {
+        return bookingRepository.findBookingByIsDoneTrue()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     private BookingResponseDto toDto(Booking booking) {
         return BookingResponseDto.builder()
                 .bookingId(booking.getBookingId())
@@ -158,6 +185,9 @@ public class BookingServiceImpl implements BookingService {
                 .contactPerson(booking.getContactPerson())
                 .contactNumber(booking.getContactNumber())
                 .createdBy(booking.getCreatedBy())
+                .isActive(booking.getIsActive())
+                .isCancelled(booking.getIsCancelled())
+                .isDone(booking.getIsDone())
                 .updatedBy(booking.getUpdatedBy())
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())

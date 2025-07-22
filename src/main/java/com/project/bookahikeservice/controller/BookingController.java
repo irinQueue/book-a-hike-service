@@ -71,9 +71,28 @@ public class BookingController {
     }
 
     @GetMapping("/get-all-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<List<BookingResponseDto>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
+
+    @GetMapping("/get-all-active-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<List<BookingResponseDto>> getAllActiveBookings() {
+        return ResponseEntity.ok(bookingService.getAllActiveBookings());
+    }
+    @GetMapping("/get-all-past-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<List<BookingResponseDto>> getAllPastBookings() {
+        return ResponseEntity.ok(bookingService.getAllPastBookings());
+    }
+    
+    @GetMapping("/get-all-cancelled-booking")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
+    public ResponseEntity<List<BookingResponseDto>> getAllCancelledBookings() {
+        return ResponseEntity.ok(bookingService.getAllCancelledBookings());
+    }
+
 
 
 }
