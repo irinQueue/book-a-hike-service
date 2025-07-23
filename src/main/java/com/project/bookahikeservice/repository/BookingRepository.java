@@ -4,7 +4,8 @@ import com.project.bookahikeservice.entity.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID>, JpaSpec
     List<Booking> findBookingByJoinerId(Long joinerId);
     List<Booking> findBookingByIsCancelledTrue(); //cancelled bookings
     List<Booking> findBookingByIsDoneTrue(); // past booking
-    List<Booking> findBookingByIsActiveTrueAndIsCancelledFalseAndIsDoneFalse(); // Active booking
+    Page<Booking> findBookingByIsActiveTrueAndIsCancelledFalseAndIsDoneFalse(Pageable pageable); // Active booking
 
 
 }

@@ -13,6 +13,8 @@ import com.project.bookahikeservice.service.BookingService;
 import com.project.bookahikeservice.specification.BookingSpecifications;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -77,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
                 .isActive(true)
                 .isCancelled(false)
                 .isDone(false)
-                .createdBy(currentUser == null ? dto.getContactPerson() : joiner.getFirstName() +  " " + joiner.getLastName())
+                .createdBy(currentUser == null ? dto.getContactPerson() : joiner.getFirstName() + " " + joiner.getLastName())
                 .build();
 
         booking = bookingRepository.save(booking);
@@ -103,7 +105,7 @@ public class BookingServiceImpl implements BookingService {
             booking.setUpdatedBy((joiner.getFirstName() + " " + joiner.getLastName()));
             booking.setBookingType("ACCOUNT");
             booking.setJoiner(joiner);
-        }else{
+        } else {
             booking.setBookingType("GUEST");
             booking.setJoiner(null);
         }
@@ -129,11 +131,11 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public List<BookingResponseDto> getAllBookings(BookingFilter bookingFilter) {
-        List<Booking> bookings = bookingRepository.findAll(BookingSpecifications.withFilters(bookingFilter));
-        return bookings.stream()
-                .map(this::toDto) // your existing mapper
-                .collect(Collectors.toList());
+    public Page<BookingResponseDto> getAllBookings(Pageable pageable, BookingFilter bookingFilter) {
+        Page<Booking> bookings = bookingRepository.findAll(BookingSpecifications.withFilters(bookingFilter), pageable);
+        return bookings.map(this::toDto);
+
+
     }
 
 
@@ -162,11 +164,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getAllActiveBookings() {
-        return bookingRepository.findBookingByIsActiveTrueAndIsCancelledFalseAndIsDoneFalse()
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public Page<BookingResponseDto> getAllActiveBookings(Pageable pageable) {
+        return bookingRepository.findBookingByIsActiveTrueAndIsCancelledFalseAndIsDoneFalse(pageable)
+                .map(this::toDto);
     }
 
     @Override

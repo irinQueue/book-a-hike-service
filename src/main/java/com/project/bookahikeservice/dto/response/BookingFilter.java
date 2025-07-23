@@ -23,5 +23,4 @@ public class BookingFilter {
     private LocalDateTime createdAfter;
     private LocalDateTime updatedAfter;
 
-    // Constructors, getters, setters
 }
