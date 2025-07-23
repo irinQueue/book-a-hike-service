@@ -1,6 +1,7 @@
 package com.project.bookahikeservice.service;
 
 import com.project.bookahikeservice.dto.request.BookingRequestDto;
+import com.project.bookahikeservice.dto.response.BookingFilter;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface BookingService {
     List<BookingResponseDto> getAllCancelledBookings();
     List<BookingResponseDto> getAllActiveBookings();
     List<BookingResponseDto> getAllPastBookings();
-    List<BookingResponseDto> getAllBookings();
+    List<BookingResponseDto> getAllBookings(BookingFilter bookingFilter);
     List<BookingResponseDto> getAllBookingsByUserId(Long userId);
     List<BookingResponseDto> getAllBookingsByEventId(UUID eventId);
 

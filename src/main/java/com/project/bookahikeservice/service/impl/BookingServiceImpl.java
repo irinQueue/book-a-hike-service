@@ -1,6 +1,7 @@
 package com.project.bookahikeservice.service.impl;
 
 import com.project.bookahikeservice.dto.request.BookingRequestDto;
+import com.project.bookahikeservice.dto.response.BookingFilter;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
 import com.project.bookahikeservice.entity.Booking;
 import com.project.bookahikeservice.entity.Event;
@@ -9,6 +10,7 @@ import com.project.bookahikeservice.repository.BookingRepository;
 import com.project.bookahikeservice.repository.EventRepository;
 import com.project.bookahikeservice.repository.UserRepository;
 import com.project.bookahikeservice.service.BookingService;
+import com.project.bookahikeservice.specification.BookingSpecifications;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -127,10 +129,10 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public List<BookingResponseDto> getAllBookings() {
-        return bookingRepository.findAll()
-                .stream()
-                .map(this::toDto)
+    public List<BookingResponseDto> getAllBookings(BookingFilter bookingFilter) {
+        List<Booking> bookings = bookingRepository.findAll(BookingSpecifications.withFilters(bookingFilter));
+        return bookings.stream()
+                .map(this::toDto) // your existing mapper
                 .collect(Collectors.toList());
     }
 

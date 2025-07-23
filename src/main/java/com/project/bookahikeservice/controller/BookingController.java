@@ -1,15 +1,18 @@
 package com.project.bookahikeservice.controller;
 
 import com.project.bookahikeservice.dto.request.BookingRequestDto;
+import com.project.bookahikeservice.dto.response.BookingFilter;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
 import com.project.bookahikeservice.dto.response.PaginatedResponse;
 import com.project.bookahikeservice.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -72,9 +75,20 @@ public class BookingController {
 
     @GetMapping("/get-all-booking")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
-    public ResponseEntity<List<BookingResponseDto>> getAllBookings() {
-        return ResponseEntity.ok(bookingService.getAllBookings());
+    public ResponseEntity<List<BookingResponseDto>> getAllBookings(
+            @RequestParam(required = false) UUID eventId,
+            @RequestParam(required = false) String bookingType,
+            @RequestParam(required = false) Long joinerId,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(required = false) Boolean isCancelled,
+            @RequestParam(required = false) Boolean isDone,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAfter,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedAfter
+    ) {
+        BookingFilter filter = new BookingFilter(eventId, bookingType, joinerId, isActive, isCancelled, isDone, createdAfter, updatedAfter);
+        return ResponseEntity.ok(bookingService.getAllBookings(filter));
     }
+
 
     @GetMapping("/get-all-active-booking")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
@@ -86,13 +100,12 @@ public class BookingController {
     public ResponseEntity<List<BookingResponseDto>> getAllPastBookings() {
         return ResponseEntity.ok(bookingService.getAllPastBookings());
     }
-    
+
     @GetMapping("/get-all-cancelled-booking")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<List<BookingResponseDto>> getAllCancelledBookings() {
         return ResponseEntity.ok(bookingService.getAllCancelledBookings());
     }
-
 
 
 }
