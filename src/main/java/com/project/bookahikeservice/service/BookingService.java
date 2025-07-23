@@ -6,7 +6,6 @@ import com.project.bookahikeservice.dto.response.BookingResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface BookingService {
@@ -14,12 +13,12 @@ public interface BookingService {
     BookingResponseDto updateBooking(UUID bookingId, BookingRequestDto dto);
     String deleteBooking(UUID bookingId);
     BookingResponseDto getBookingById(UUID bookingId);
-    List<BookingResponseDto> getAllCancelledBookings();
+    Page<BookingResponseDto> getAllCancelledBookings(Pageable pageable);
     Page<BookingResponseDto> getAllActiveBookings(Pageable pageable);
-    List<BookingResponseDto> getAllPastBookings();
+    Page<BookingResponseDto> getAllPastBookings(Pageable pageable);
     Page<BookingResponseDto> getAllBookings(Pageable pageable, BookingFilter bookingFilter);
-    List<BookingResponseDto> getAllBookingsByUserId(Long userId);
-    List<BookingResponseDto> getAllBookingsByEventId(UUID eventId);
+    Page<BookingResponseDto> getAllBookingsByUserId(Pageable pageable, Long userId);
+    Page<BookingResponseDto> getAllBookingsByEventId(Pageable pageable, UUID eventId);
 
 
 }

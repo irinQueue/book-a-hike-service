@@ -3,8 +3,11 @@ package com.project.bookahikeservice.controller;
 import com.project.bookahikeservice.dto.request.BookingRequestDto;
 import com.project.bookahikeservice.dto.response.BookingFilter;
 import com.project.bookahikeservice.dto.response.BookingResponseDto;
-import com.project.bookahikeservice.dto.response.EventResponseDto;
 import com.project.bookahikeservice.dto.response.PaginatedResponse;
+import com.project.bookahikeservice.entity.Event;
+import com.project.bookahikeservice.entity.User;
+import com.project.bookahikeservice.repository.EventRepository;
+import com.project.bookahikeservice.repository.UserRepository;
 import com.project.bookahikeservice.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,10 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     @PostMapping("/create-booking")
     public ResponseEntity<BookingResponseDto> createBooking(
@@ -67,14 +74,41 @@ public class BookingController {
     }
 
     @GetMapping("/get-user-booking/{id}")
-    public ResponseEntity<List<BookingResponseDto>> getBookingByUserId(@PathVariable Long id) {
-        return ResponseEntity.ok(bookingService.getAllBookingsByUserId(id));
+    public ResponseEntity<PaginatedResponse<BookingResponseDto>> getBookingByUserId(@PathVariable Long id,@PageableDefault Pageable pageable) {
+
+        User user = userRepository.findById(id).orElseThrow(NoSuchElementException::new);
+
+        try {
+
+            Page<BookingResponseDto> page = bookingService.getAllBookingsByUserId(pageable, id);
+            String message = "User " + user.getFirstName() + " bookings successfully retrieved";
+            PaginatedResponse<BookingResponseDto> response = getBookingResponseDtoPaginatedResponse(page,message);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to fetch User" + user.getFirstName() + " bookings: " + e.getMessage()), null)
+            );
+        }
     }
 
     @GetMapping("/get-booking-event/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
-    public ResponseEntity<List<BookingResponseDto>> getBookingByEventId(@PathVariable UUID id) {
-        return ResponseEntity.ok(bookingService.getAllBookingsByEventId(id));
+    public ResponseEntity<PaginatedResponse<BookingResponseDto>> getBookingByEventId(@PathVariable UUID id, @PageableDefault Pageable pageable) {
+
+        Event event = eventRepository.findById(id).orElseThrow(() ->  new NoSuchElementException("Event not found with ID: " + id));
+        try {
+
+            Page<BookingResponseDto> page = bookingService.getAllBookingsByEventId(pageable,id);
+            String message = "Event " + event.getTitle() + ", bookings successfully retrieved";
+            PaginatedResponse<BookingResponseDto> response = getBookingResponseDtoPaginatedResponse(page,message);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to fetch User" + event.getTitle() + ", bookings: " + e.getMessage()), null)
+            );
+        }
     }
 
     @GetMapping("/get-all-booking")
@@ -90,8 +124,6 @@ public class BookingController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime updatedAfter,
             @PageableDefault Pageable pageable
     ) {
-//        BookingFilter filter = new BookingFilter(eventId, bookingType, joinerId, isActive, isCancelled, isDone, createdAfter, updatedAfter);
-//        return ResponseEntity.ok(bookingService.getAllBookings(filter));
 
         try {
             BookingFilter filter = new BookingFilter(eventId, bookingType, joinerId, isActive, isCancelled, isDone, createdAfter, updatedAfter);
@@ -110,7 +142,6 @@ public class BookingController {
     @GetMapping("/get-all-active-booking")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<PaginatedResponse<BookingResponseDto>> getAllActiveBookings(@PageableDefault Pageable pageable) {
-
         try {
 
             Page<BookingResponseDto> page = bookingService.getAllActiveBookings(pageable);
@@ -120,7 +151,7 @@ public class BookingController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active events: " + e.getMessage()), null)
+                    new PaginatedResponse<>(null, null, List.of("Failed to fetch active bookings: " + e.getMessage()), null)
             );
         }
     }
@@ -129,14 +160,36 @@ public class BookingController {
 
     @GetMapping("/get-all-past-booking")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
-    public ResponseEntity<List<BookingResponseDto>> getAllPastBookings() {
-        return ResponseEntity.ok(bookingService.getAllPastBookings());
+    public ResponseEntity<PaginatedResponse<BookingResponseDto>> getAllPastBookings(@PageableDefault Pageable pageable) {
+        try {
+
+            Page<BookingResponseDto> page = bookingService.getAllPastBookings(pageable);
+            String message = "Past bookings successfully retrieved";
+            PaginatedResponse<BookingResponseDto> response = getBookingResponseDtoPaginatedResponse(page,message);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to fetch Past bookings: " + e.getMessage()), null)
+            );
+        }
     }
 
     @GetMapping("/get-all-cancelled-booking")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
-    public ResponseEntity<List<BookingResponseDto>> getAllCancelledBookings() {
-        return ResponseEntity.ok(bookingService.getAllCancelledBookings());
+    public ResponseEntity<PaginatedResponse<BookingResponseDto>> getAllCancelledBookings(@PageableDefault Pageable pageable) {
+        try {
+
+            Page<BookingResponseDto> page = bookingService.getAllCancelledBookings(pageable);
+            String message = "Cancelled bookings successfully retrieved";
+            PaginatedResponse<BookingResponseDto> response = getBookingResponseDtoPaginatedResponse(page,message);
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null, List.of("Failed to Cancelled Past bookings: " + e.getMessage()), null)
+            );
+        }
     }
 
     private static PaginatedResponse<BookingResponseDto> getBookingResponseDtoPaginatedResponse(Page<BookingResponseDto> page,String message) {

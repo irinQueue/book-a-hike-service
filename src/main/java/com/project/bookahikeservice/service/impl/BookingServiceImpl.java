@@ -20,10 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -140,27 +138,22 @@ public class BookingServiceImpl implements BookingService {
 
 
     @Override
-    public List<BookingResponseDto> getAllBookingsByUserId(Long joinerId) {
-        return bookingRepository.findBookingByJoinerId(joinerId)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public Page<BookingResponseDto> getAllBookingsByUserId(Pageable pageable, Long joinerId) {
+        return bookingRepository.findBookingByJoinerId(pageable,joinerId)
+                .map(this::toDto);
     }
 
     @Override
-    public List<BookingResponseDto> getAllBookingsByEventId(UUID eventId) {
-        return bookingRepository.findBookingByEventId(eventId)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public Page<BookingResponseDto> getAllBookingsByEventId(Pageable pageable, UUID eventId) {
+        return bookingRepository.findBookingByEventId(pageable,eventId)
+                .map(this::toDto);
     }
 
     @Override
-    public List<BookingResponseDto> getAllCancelledBookings() {
-        return bookingRepository.findBookingByIsCancelledTrue()
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public Page<BookingResponseDto> getAllCancelledBookings(Pageable pageable) {
+        return bookingRepository.findBookingByIsCancelledTrue(pageable)
+                .map(this::toDto);
+
     }
 
     @Override
@@ -170,11 +163,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getAllPastBookings() {
-        return bookingRepository.findBookingByIsDoneTrue()
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+    public Page<BookingResponseDto> getAllPastBookings(Pageable pageable) {
+        return bookingRepository.findBookingByIsDoneTrue(pageable)
+                .map(this::toDto);
     }
 
     private BookingResponseDto toDto(Booking booking) {
