@@ -25,6 +25,7 @@ public class BookingResponseDto {
     private Boolean isDone;
     private String createdBy;
     private String updatedBy;
+    private UUID eventBatchId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

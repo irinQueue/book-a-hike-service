@@ -230,6 +230,7 @@ public class BookingServiceImpl implements BookingService {
                 .isActive(booking.getIsActive())
                 .isCancelled(booking.getIsCancelled())
                 .isDone(booking.getIsDone())
+                .eventBatchId(booking.getEventBatch().getId())
                 .updatedBy(booking.getUpdatedBy())
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())
