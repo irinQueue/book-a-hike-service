@@ -11,11 +11,18 @@ import java.util.UUID;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, UUID>, JpaSpecificationExecutor<Booking> {
-    Page<Booking> findBookingByEventId(Pageable pageable,UUID eventId);
+    Page<Booking> findBookingByEventId(Pageable pageable, UUID eventId);
+
     Page<Booking> findBookingByJoinerId(Pageable pageable, Long joinerId);
+
     Page<Booking> findBookingByIsCancelledTrue(Pageable pageable); //cancelled bookings
+
     Page<Booking> findBookingByIsDoneTrue(Pageable pageable); // past booking
+
     Page<Booking> findBookingByIsActiveTrueAndIsCancelledFalseAndIsDoneFalse(Pageable pageable); // Active booking
 
+//    @Query("SELECT COALESCE(SUM(b.pax), 0) FROM Booking b WHERE b.batch.id = :batchId AND b.isCancelled = false")
+//    int getTotalPaxInBatch(@Param("batchId") UUID batchId);
+//}
 
 }

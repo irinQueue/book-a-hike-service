@@ -96,7 +96,7 @@ public class BookingController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<PaginatedResponse<BookingResponseDto>> getBookingByEventId(@PathVariable UUID id, @PageableDefault Pageable pageable) {
 
-        Event event = eventRepository.findById(id).orElseThrow(() ->  new NoSuchElementException("Event not found with ID: " + id));
+        Event event = eventRepository.findByIdOrderByCreatedAt(id).orElseThrow(() ->  new NoSuchElementException("Event not found with ID: " + id));
         try {
 
             Page<BookingResponseDto> page = bookingService.getAllBookingsByEventId(pageable,id);

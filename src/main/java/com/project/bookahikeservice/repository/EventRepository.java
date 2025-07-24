@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-    Optional<Event> findById(UUID id);
+    Optional<Event> findByIdOrderByCreatedAt(UUID eventId);
     Page<Event> findAllByActiveTrue(Pageable pageable);
     Page<Event> findAllByActiveFalse(Pageable pageable);
 
