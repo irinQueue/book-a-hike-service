@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/coordinator/**").hasRole("COORDINATOR")
                         .requestMatchers("/api/bookings/**").authenticated()
+                        .requestMatchers("/api/eventBatch/**").authenticated()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )

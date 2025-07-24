@@ -59,6 +59,9 @@ public class Event {
     @JoinColumn(name = "updated_by")
     private User updatedBy;
 
+    @OneToMany(mappedBy = "event")
+    private List<EventBatch> batches;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

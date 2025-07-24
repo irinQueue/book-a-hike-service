@@ -32,6 +32,10 @@ public class Booking {
     @Column(name = "booking_type", nullable = false)
     private String bookingType; // "GUEST" or "USER"
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "batch_id")
+    private EventBatch eventBatch;
+
     private int pax;
 
     private String contactPerson;
