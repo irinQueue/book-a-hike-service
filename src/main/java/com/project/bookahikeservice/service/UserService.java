@@ -13,5 +13,6 @@ public interface UserService {
     List<User> getAllUsers();
     Optional<User> getUserById(Long id);
     User createOrganizer(UserRegistrationDto dto);
+    Optional<User> getUserByEmail(String email);
 
 }

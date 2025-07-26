@@ -8,6 +8,8 @@ import com.project.bookahikeservice.entity.User;
 import com.project.bookahikeservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -75,5 +77,31 @@ public class UserController {
             );
         }
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponseDto>> getCurrentUserProfile() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(401).body(
+                    new ApiResponse<>(Collections.emptyList(), Collections.singletonList("Unauthorized"))
+            );
+        }
+
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
+
+        UserResponseDto dto = new UserResponseDto(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                user.getNumber()
+        );
+
+        return ResponseEntity.ok(new ApiResponse<>(Collections.singletonList(dto), Collections.emptyList()));
+    }
+
 
 }
