@@ -77,15 +77,12 @@ public class UserController {
             );
         }
     }
-
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserResponseDto>> getCurrentUserProfile() {
+    public ResponseEntity<UserResponseDto> getCurrentUserProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
-            return ResponseEntity.status(401).body(
-                    new ApiResponse<>(Collections.emptyList(), Collections.singletonList("Unauthorized"))
-            );
+            return ResponseEntity.status(401).build();
         }
 
         String email = authentication.getName();
@@ -100,8 +97,7 @@ public class UserController {
                 user.getNumber()
         );
 
-        return ResponseEntity.ok(new ApiResponse<>(Collections.singletonList(dto), Collections.emptyList()));
+        return ResponseEntity.ok(dto);
     }
-
 
 }
