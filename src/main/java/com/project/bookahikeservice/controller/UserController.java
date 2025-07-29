@@ -1,6 +1,7 @@
 package com.project.bookahikeservice.controller;
 
 
+import com.project.bookahikeservice.dto.request.UserUpdateDto;
 import com.project.bookahikeservice.dto.response.ApiResponse;
 import com.project.bookahikeservice.dto.request.UserRegistrationDto;
 import com.project.bookahikeservice.dto.response.UserResponseDto;
@@ -99,5 +100,37 @@ public class UserController {
 
         return ResponseEntity.ok(dto);
     }
+
+    @PatchMapping("/me/edit")
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateCurrentUser(@RequestBody UserUpdateDto updateDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+            return ResponseEntity.status(401).body(
+                    new ApiResponse<>(Collections.emptyList(), Collections.singletonList("Unauthorized"))
+            );
+        }
+
+        String email = authentication.getName();
+        User user = userService.getUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setFirstName(updateDto.getFirstName());
+        user.setLastName(updateDto.getLastName());
+        user.setNumber(updateDto.getNumber());
+
+        User updatedUser = userService.updateUser(user);
+
+        UserResponseDto dto = new UserResponseDto(
+                updatedUser.getId(),
+                updatedUser.getFirstName(),
+                updatedUser.getLastName(),
+                updatedUser.getEmail(),
+                updatedUser.getNumber()
+        );
+
+        return ResponseEntity.ok(new ApiResponse<>(Collections.singletonList(dto), Collections.emptyList()));
+    }
+
 
 }

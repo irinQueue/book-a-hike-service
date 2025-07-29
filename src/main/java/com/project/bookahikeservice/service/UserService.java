@@ -14,5 +14,7 @@ public interface UserService {
     Optional<User> getUserById(Long id);
     User createOrganizer(UserRegistrationDto dto);
     Optional<User> getUserByEmail(String email);
+    User updateUser(User user);
+
 
 }
