@@ -40,8 +40,7 @@ public class SecurityConfig {
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/events/get-active").permitAll()
+                        .requestMatchers("/api/auth/**","/api/events/get-active", "/api/events/get-by-id").permitAll()
                         .requestMatchers("/api/events/get-by-id").permitAll()
                         .requestMatchers("/api/bookings/create-booking").permitAll()
                         .requestMatchers("/api/events/**").hasAnyRole("ADMIN", "ORGANIZER")
