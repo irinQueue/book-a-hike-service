@@ -1,5 +1,6 @@
 package com.project.bookahikeservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.bookahikeservice.dto.request.EventRequestDto;
 import com.project.bookahikeservice.dto.response.EventResponseDto;
 import com.project.bookahikeservice.dto.response.PaginatedResponse;
@@ -9,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,42 +27,40 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @PostMapping("/create-event")
+    @PostMapping(value = "/create-event", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
-    public ResponseEntity<PaginatedResponse<EventResponseDto>> createEvent(@RequestBody @Valid EventRequestDto dto) {
+    public ResponseEntity<?> createEvent(
+            @RequestParam("dto") String dtoJson,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
+    ) {
         try {
-            EventResponseDto createdEvent = eventService.createEvent(dto);
+            EventRequestDto dto = objectMapper.readValue(dtoJson, EventRequestDto.class);
+            EventResponseDto createdEvent = eventService.createEvent(dto, images);
 
             PaginatedResponse<EventResponseDto> response = new PaginatedResponse<>(
-                    List.of(createdEvent),
-                    null,
-                    null,
-                    null
-            );
-
+                    List.of(createdEvent), null, null, null);
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            PaginatedResponse<EventResponseDto> errorResponse = new PaginatedResponse<>(
-                    null,
-                    null,
-                    List.of("Failed to create event: " + e.getMessage()),
-                    null
-            );
-
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return ResponseEntity.internalServerError().body(
+                    new PaginatedResponse<>(null, null,
+                            List.of("Failed to create event: " + e.getMessage()), null));
         }
     }
 
-    @PatchMapping("/update/{id}")
+
+    @PatchMapping(value = "/update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
     public ResponseEntity<?> updateEvent(
             @PathVariable UUID id,
-            @Valid @RequestBody EventRequestDto updatedEventDto
+            @RequestPart("dto") @Valid EventRequestDto updatedEventDto,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
     ) {
         try {
-            EventResponseDto updatedEvent = eventService.updateEvent(id, updatedEventDto);
+            EventResponseDto updatedEvent = eventService.updateEvent(id, updatedEventDto, images);
             return ResponseEntity.ok(updatedEvent);
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(404).body(
@@ -71,6 +72,7 @@ public class EventController {
             );
         }
     }
+
 
     @PatchMapping("/disable/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('ORGANIZER')")
@@ -105,8 +107,6 @@ public class EventController {
             );
         }
     }
-
-
 
 
     @GetMapping("/get-all") // this is for authorized roles api only
@@ -156,13 +156,13 @@ public class EventController {
             );
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
-                    new PaginatedResponse<>(null, null, List.of("Error fetching event: " + e.getMessage()),null)
+                    new PaginatedResponse<>(null, null, List.of("Error fetching event: " + e.getMessage()), null)
             );
         }
     }
 
     @GetMapping("/get-active")
-   // this should be client facing api for homepage
+    // this should be client facing api for homepage
     public ResponseEntity<PaginatedResponse<EventResponseDto>> getAllActiveEvents(@PageableDefault Pageable pageable) {
         try {
             Page<EventResponseDto> page = eventService.getAllActiveEvents(pageable);

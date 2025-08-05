@@ -16,9 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,12 +50,33 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userDetails.getId()));
     }
 
-    @Override
-    public EventResponseDto createEvent(EventRequestDto dto) {
+
+    private List<String> uploadImages(MultipartFile[] images) {
+        if (images == null || images.length == 0) return Collections.emptyList();
+
+        List<String> imagePaths = new ArrayList<>();
+        for (MultipartFile file : images) {
+            try {
+                String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                Path filePath = Paths.get("uploads/images", filename);
+                Files.createDirectories(filePath.getParent());
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                imagePaths.add("/uploads/images/" + filename);
+            } catch (IOException e) {
+                throw new RuntimeException("Image upload failed: " + e.getMessage());
+            }
+        }
+        return imagePaths;
+    }
+
+
+    public EventResponseDto createEvent(EventRequestDto dto, MultipartFile[] images) {
         User coordinator = userRepository.findById(dto.getCoordinatorId())
                 .orElseThrow(() -> new RuntimeException("Coordinator not found"));
 
         User currentUser = getCurrentUser();
+
+        List<String> imageUrls = uploadImages(images); // implement this
 
         Event event = Event.builder()
                 .title(dto.getTitle())
@@ -61,7 +87,7 @@ public class EventServiceImpl implements EventService {
                 .classification(dto.getClassification())
                 .cost(dto.getCost())
                 .coordinator(coordinator)
-                .images(dto.getImages())
+                .images(imageUrls)
                 .active(true)
                 .createdBy(currentUser)
                 .updatedBy(currentUser)
@@ -72,15 +98,9 @@ public class EventServiceImpl implements EventService {
         return mapToResponse(saved);
     }
 
-    @Override
-    public EventResponseDto updateEvent(UUID id, EventRequestDto dto) {
+    public EventResponseDto updateEvent(UUID id, EventRequestDto dto, MultipartFile[] newImages) {
         Event event = eventRepository.findByIdOrderByCreatedAt(id)
-                .orElseThrow(() -> new NoSuchElementException("Event not found with ID: " + id));
-
-        User coordinator = userRepository.findById(dto.getCoordinatorId())
-                .orElseThrow(() -> new RuntimeException("Coordinator not found"));
-
-        User currentUser = getCurrentUser();
+                .orElseThrow(() -> new NoSuchElementException("Event not found"));
 
         event.setTitle(dto.getTitle());
         event.setDescription(dto.getDescription());
@@ -89,11 +109,25 @@ public class EventServiceImpl implements EventService {
         event.setDifficulty(dto.getDifficulty());
         event.setClassification(dto.getClassification());
         event.setCost(dto.getCost());
-        event.setCoordinator(coordinator);
-        event.setImages(dto.getImages());
-        event.setUpdatedBy(currentUser);
-        Event saved = eventRepository.save(event);
 
+        // Update coordinator
+        User coordinator = userRepository.findById(dto.getCoordinatorId())
+                .orElseThrow(() -> new RuntimeException("Coordinator not found"));
+        event.setCoordinator(coordinator);
+
+        // Merge images
+        List<String> currentImages = event.getImages();
+        if (currentImages == null) currentImages = new ArrayList<>();
+
+        if (newImages != null && newImages.length > 0) {
+            List<String> uploaded = uploadImages(newImages); // same helper method
+            currentImages.addAll(uploaded);
+        }
+
+        event.setImages(currentImages);
+        event.setUpdatedBy(getCurrentUser());
+
+        Event saved = eventRepository.save(event);
         return mapToResponse(saved);
     }
 
